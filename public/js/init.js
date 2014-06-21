@@ -1,15 +1,15 @@
 require.config({
   paths: {
-    backbone: './lib/backbone',
-    underscore: './lib/underscore',
-    jquery: './lib/jquery',
+    Backbone: './lib/backbone',
+    _: './lib/underscore',
+    $: './lib/jquery',
     text: './lib/require-text',
     domReady: './lib/domReady',
     tpl: '../tpl'
   },
   shim: {
-    backbone: ['underscore', 'jquery'],
-    gl: ['backbone']
+    Backbone: ['_', '$'],
+    gl: ['Backbone']
   }
 });
 

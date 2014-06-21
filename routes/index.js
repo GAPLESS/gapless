@@ -15,4 +15,13 @@ router.get('/u/auth', function (req, res) {
   }
 });
 
+// login 
+router.post('/login', function (req, res) {
+  console.log('email: ' + req.param('email', '') + ', password:' + req.param('password'));
+  req.session.loggedIn = true;
+  res.send({status: 200, msg: '登录成功'});
+});
+
+// expose router
+// -------------
 module.exports = router;

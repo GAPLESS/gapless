@@ -26,17 +26,17 @@ app.use(favicon(pth.join(__dirname, 'favicon.ico')));
 app.use(express.static(pth.join(__dirname, 'public')));
 app.use(logger('dev'));
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded());
+app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieParser());
 app.use(session({secret: 'gapless', session: new session.MemoryStore()}));
 
 // routes 
 // -------------
-// index page
+// index page with '/' route
 var index = require('./routes/index');
 app.use('/', index);
 
 
-//
-
+// expose app
+// -------------
 module.exports = app;
