@@ -1,12 +1,13 @@
-define(['views/login', 'views/index'], 
-  function (LoginView, IndexView) {
+define(['views/login', 'views/index', 'views/register'], 
+  function (LoginView, IndexView, RegisterView) {
   var GLRouter = Backbone.Router.extend({
     
     currentView: null,
 
     routes: {
       login: 'login',
-      index: 'index'
+      index: 'index',
+      register: 'register'
     },
 
     changeView: function (view) {
@@ -23,6 +24,10 @@ define(['views/login', 'views/index'],
 
     index: function () {
       this.changeView(new IndexView);
+    },
+
+    register: function () {
+      this.changeView(new RegisterView);
     }
     
   });

@@ -1,4 +1,5 @@
 define(['text!tpl/login.html'], function(loginTpl) {
+  
   var LoginModel = Backbone.Model.extend({
 
     urlRoot: '/login',
@@ -40,4 +41,5 @@ define(['text!tpl/login.html'], function(loginTpl) {
   });
 
   return LoginView;
+
 });

@@ -9,7 +9,7 @@ router.get('/', function(req, res) {
 // check whether user is logined or not.
 router.get('/u/auth', function (req, res) {
   if (req.session.loggedIn) {
-    res.send({status: 200, msg: '你已经登录成功了'});
+    res.send({status: 200, msg: '你已经登录成功过了'});
   } else {
     res.send({status: 401, msg: '登录失败，可能你没有权限'});
   }
@@ -20,6 +20,14 @@ router.post('/login', function (req, res) {
   console.log('email: ' + req.param('email', '') + ', password:' + req.param('password'));
   req.session.loggedIn = true;
   res.send({status: 200, msg: '登录成功'});
+});
+
+// register
+router.post('/register', function (req, res) {
+  console.log('email: ' + req.param('email', '') + ', password: ' + req.param('password', '')
+    + 'firstName: ' + req.param('firstName', '') + ', lastName: ' + req.param('lastName', ''));
+  
+  res.send({status: 200, msg: '注册成功'});
 });
 
 // expose router
