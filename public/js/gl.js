@@ -2,9 +2,9 @@ define(['router'], function (Router) {
   function checkLogin (callback) {
     Backbone.ajax({
       type: 'get',
-      url: '/u/auth',
+      url: '/auth',
       success: function (data) {
-        if (data.status === '200') {
+        if (data.status === 200) {
           callback(true);
         } else {
           callback(false);

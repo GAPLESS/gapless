@@ -5,12 +5,11 @@ define(['text!tpl/register.html'], function(registerTpl) {
     url: '/register',
 
     initialize: function (attrs) {
-      this.set(attrs, {validate:true});
+      this.set(attrs);
     },
 
     validate: function (attrs) {
       if (attrs.password !== attrs.cpassword) {
-        console.log('两次输入密码不一致');
         return '两次输入密码不一致';
       }
     }
@@ -27,7 +26,6 @@ define(['text!tpl/register.html'], function(registerTpl) {
 
     render: function () {
       this.$el.html(registerTpl);
-
     },
 
     register: function () {
@@ -41,12 +39,18 @@ define(['text!tpl/register.html'], function(registerTpl) {
         lastName: this.$el.find('input[name="lastName"]').val(),
       });
 
-      Backbone.sync('create', registerModel, {
-        success: function (data) {
-          console.log(data);
-        }
-      });
-
+      if (registerModel.isValid()) {
+        registerModel.unset('cemail');
+        registerModel.unset('cpassword');
+        Backbone.sync('create', registerModel, {
+          success: function (data) {
+            if (data.status === 200) {
+              location.reload();
+            }
+          }
+        });
+      }
+      
       return false;
 
     }

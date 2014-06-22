@@ -24,7 +24,7 @@ define(['text!tpl/login.html'], function(loginTpl) {
       Backbone.sync('create', loginModel, {
         success: function (data) {
           if (data.status === 200) {
-            
+            window.location.reload();          
           } else {
             
           }

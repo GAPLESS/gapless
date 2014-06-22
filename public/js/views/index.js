@@ -7,5 +7,5 @@ define(['text!tpl/index.html'], function (indexTpl) {
     }
   });
 
-  return new IndexView;
+  return IndexView;
 });
