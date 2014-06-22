@@ -8,6 +8,16 @@ var crypto = require('crypto'),
 // -------------
 var config = require('../config/mail');
 
+// define Status's schema
+var Status = new mongoose.Schema({
+  name: {
+    first: {type: String},
+    last: {type: String}
+  },
+
+  status: {type: String}
+});
+
 // define Account's schema
 var AccountSchema = new mongoose.Schema({
 
@@ -28,7 +38,11 @@ var AccountSchema = new mongoose.Schema({
 
   photoUrl: { type: String },
 
-  biography: { type: String }
+  biography: { type: String },
+
+  status:    [Status], // My own status updates only
+  
+  activity:  [Status]  //  All status updates including friends
 
 });
 
@@ -69,7 +83,7 @@ Account.prototype.login = function (email, password, callback) {
 
   shaSum.update(password);
   User.findOne({email: email, password: shaSum.digest('hex')}, function (err, user) {
-    callback(user !== null);
+    callback(user);
   });
 };
 
@@ -106,5 +120,12 @@ Account.prototype.rp = function (userId, newpassword) {
   shaSum.update(newpassword);
   User.update({_id: userId}, {$set: {password: shaSum.digest('hex')}}, {upsert: false}, function () {
     console.log('Change password done for user ' + userId);
+  });
+};
+
+// 
+Account.prototype.findById = function (userId, callback) {
+  User.findOne({_id: userId}, function(err, user) {
+    callback(user);
   });
 };

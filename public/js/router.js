@@ -1,5 +1,6 @@
-define(['views/login', 'views/index', 'views/register', 'views/fp'], 
-  function (LoginView, IndexView, RegisterView, FpView) {
+define(['views/login', 'views/index', 'views/register', 'views/fp', 'views/profile',
+  'models/Account', 'models/StatusCollection'], 
+  function (LoginView, IndexView, RegisterView, FpView, ProfileView, Account, StatusCollection) {
   var GLRouter = Backbone.Router.extend({
     
     currentView: null,
@@ -8,7 +9,8 @@ define(['views/login', 'views/index', 'views/register', 'views/fp'],
       login: 'login',
       index: 'index',
       register: 'register',
-      fp: 'fp'
+      fp: 'fp',
+      'profile/:id': 'profile'
     },
 
     changeView: function (view) {
@@ -24,7 +26,12 @@ define(['views/login', 'views/index', 'views/register', 'views/fp'],
     },
 
     index: function () {
-      this.changeView(new IndexView);
+      var statusCollection = new StatusCollection();
+      statusCollection.url = '/u/me/activity';
+      this.changeView(new IndexView({
+        collection: statusCollection
+      }));
+      statusCollection.fetch();
     },
 
     register: function () {
@@ -34,6 +41,12 @@ define(['views/login', 'views/index', 'views/register', 'views/fp'],
     // forgot password
     fp: function () {
       this.changeView(new FpView);
+    },
+
+    profile: function (id) {
+      var account = new Account({id: id});
+      this.changeView(new ProfileView({model: account}));
+      account.fetch();
     }
     
   });

@@ -5,7 +5,9 @@ require.config({
     $: './lib/jquery',
     text: './lib/require-text',
     domReady: './lib/domReady',
-    tpl: '../tpl'
+    tpl: '../tpl',
+    models: './models',
+    SocailNetView: './SocailNetView'
   },
   shim: {
     Backbone: ['_', '$'],

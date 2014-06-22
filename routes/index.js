@@ -26,12 +26,13 @@ router.post('/login', function (req, res) {
   var email = req.param('email'),
     password = req.param('password');
 
-  Account.login(email, password, function (success) {
-    if (!success) {
+  Account.login(email, password, function (user) {
+    if (!user) {
       res.send({status: '401', msg: '你未注册'});
       return;
     }
 
+    req.session.userId = user._id;
     req.session.loggedIn = true;
     res.send({status: 200, msg: '登录成功'});
   });
@@ -78,6 +79,48 @@ router.post('/rp', function (req, res) {
   res.render('rpSuccess');
 });
 
+// 
+router.get('/u/:id', function(req, res) {
+  var userId = req.params.id == 'me'
+                     ? req.session.userId
+                     : req.params.id;
+  Account.findById(userId, function(user) {
+    res.send(user);
+  });
+});
+
+//
+router.get('/u/:id/activity', function (req, res) {
+  var userId = req.params.id == 'me'
+                     ? req.session.userId
+                     : req.params.id;
+  Account.findById(userId, function(user) {
+    res.send(user.activity);
+  });
+});
+
+//
+router.post('/u/:id/status', function (req, res) {
+  var userId = req.params.id == 'me'
+                     ? req.session.userId
+                     : req.params.id;
+  Account.findById(userId, function(user) {
+    var Status = {
+      name: user.name,
+      status: req.param('status', '')
+    };
+    (user.status || (user.status = [])).push(Status);
+    (user.activity || (user.activity = [])).push(Status);
+    user.save(function (err) {
+      if (err) {
+        console.log('Error saving user: ' + err);
+      }
+      console.log();
+    });
+
+    res.send({status: 200, result: user});
+  });
+});
 
 // expose router
 // -------------
