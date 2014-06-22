@@ -6,7 +6,7 @@ var crypto = require('crypto'),
 
 // file modules
 // -------------
-var config = require('../config/mail.config');
+var config = require('../config/mail');
 
 // define Account's schema
 var AccountSchema = new mongoose.Schema({
@@ -70,5 +70,41 @@ Account.prototype.login = function (email, password, callback) {
   shaSum.update(password);
   User.findOne({email: email, password: shaSum.digest('hex')}, function (err, user) {
     callback(user !== null);
+  });
+};
+
+// forgot password
+Account.prototype.fp = function (email, rpUrl, callback) {
+  User.findOne({email: email}, function (err, user) {
+    if (err) {
+      callback(false);
+      return;
+    }
+
+    var smtpTransport = nodemailer.createTransport('SMTP', config);
+    rpUrl += '?userId=' + user._id;
+    smtpTransport.sendMail({
+      from: '735806789@qq.com',
+      to: user.email,
+      subject: 'Gapless Password Request',
+      html: 'Click here to reset your password: <a href="' + rpUrl
+        + '" title="' + rpUrl + '">' + rpUrl + '</a>'
+    }, function (err) {
+      if (err) {
+        callback(false);
+      } else {
+        callback(true);
+      }
+    });
+  });
+};
+
+// reset password
+Account.prototype.rp = function (userId, newpassword) {
+  var shaSum = crypto.createHash('sha256');
+  
+  shaSum.update(newpassword);
+  User.update({_id: userId}, {$set: {password: shaSum.digest('hex')}}, {upsert: false}, function () {
+    console.log('Change password done for user ' + userId);
   });
 };

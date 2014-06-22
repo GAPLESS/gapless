@@ -1,0 +1,10 @@
+extends layout
+
+block content
+  form(action='/rp', method='post')
+    input(type='hidden', name='userId', value='#{userId}')
+    p
+      label(for='password') New Password:
+      input#password(type='password', name='password')
+    p
+      input(type='submit')

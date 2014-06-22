@@ -48,6 +48,37 @@ router.post('/register', function (req, res) {
   res.send({status: 200, msg: '注册成功'});
 });
 
+// forgot password
+router.post('/fp', function (req, res) {
+  var hostname = req.headers.host;
+  var email = req.param('email');
+
+  // reset password url
+  var rpUrl = 'http://' + hostname + '/rp';
+  Account.fp(email, rpUrl, function (success) {
+    if (success) {
+      res.send({status: 200, msg: '重置密码成功'});
+    }
+  });
+});
+
+// reset password page
+router.get('/rp', function (req, res) {
+  var userId = req.param('userId', '');
+  res.render('rp', {userId: userId});
+});
+
+// reset password submit
+router.post('/rp', function (req, res) {
+  var userId = req.param('userId', '');
+  var password = req.param('password', '');
+  if ( null != userId && null != password ) {
+    Account.rp(userId, password);
+  }
+  res.render('rpSuccess');
+});
+
+
 // expose router
 // -------------
 module.exports = router;
