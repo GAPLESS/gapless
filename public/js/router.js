@@ -1,6 +1,7 @@
-define(['views/login', 'views/index', 'views/register', 'views/fp', 'views/profile',
-  'models/Account', 'models/StatusCollection'], 
-  function (LoginView, IndexView, RegisterView, FpView, ProfileView, Account, StatusCollection) {
+define(['views/login', 'views/index', 'views/register', 'views/fp', 'views/profile','views/contacts',
+  'views/addcontact', 'models/Account', 'models/StatusCollection', 'models/ContactsCollection'], 
+  function (LoginView, IndexView, RegisterView, FpView, ProfileView, ContactsView, AddContactView,
+    Account, StatusCollection, ContactsCollection) {
   var GLRouter = Backbone.Router.extend({
     
     currentView: null,
@@ -10,7 +11,9 @@ define(['views/login', 'views/index', 'views/register', 'views/fp', 'views/profi
       index: 'index',
       register: 'register',
       fp: 'fp',
-      'profile/:id': 'profile'
+      'profile/:id': 'profile',
+      'contacts/:id': 'contacts',
+      addcontact: 'addcontact'
     },
 
     changeView: function (view) {
@@ -47,6 +50,20 @@ define(['views/login', 'views/index', 'views/register', 'views/fp', 'views/profi
       var account = new Account({id: id});
       this.changeView(new ProfileView({model: account}));
       account.fetch();
+    },
+
+    contacts: function (id) {
+      var contactId = id || 'me';
+      var contactsCollection = new ContactsCollection();
+      contactsCollection.url = '/u/' + contactId + '/contacts';
+      this.changeView(new ContactsView({
+        collection: contactsCollection
+      }));
+      contactsCollection.fetch();
+    },
+
+    addcontact: function () {
+      this.changeView(new AddContactView);
     }
     
   });

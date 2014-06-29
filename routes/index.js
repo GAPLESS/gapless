@@ -122,6 +122,82 @@ router.post('/u/:id/status', function (req, res) {
   });
 });
 
+// get contacts of current user
+// -------------
+router.get('/u/:id/contacts', function (req, res) {
+  var userId = req.params.id === 'me' ? req.session.userId : req.params.id;
+  Account.findById(userId, function (user) {
+    res.send(user.contacts);
+  });
+});
+
+// search contacts
+// -------------
+router.post('/contacts/find', function (req, res) {
+  var searchStr = req.param('searchStr', null);
+
+  if ( null == searchStr ) {
+    res.send({status: 400});
+    return;
+  }
+
+  Account.findByString(searchStr, function (err, users) {
+    if (err || users.length == 0) {
+      res.send({status: 404});
+    } else {
+      res.send({status: 200, result: users});
+    }
+  });
+});
+
+// /accounts/:id/contact
+// -------------
+router.post('/accounts/:id/contact', function (req, res) {
+  var userId = req.params.id == 'me'
+                     ? req.session.userId
+                     : req.params.id;
+  var contactId = req.param('contactId', null);
+
+  // Missing contactId, don't bother going any further
+  if ( null == contactId ) {
+    res.send({status: 400});
+    return;
+  }
+
+  Account.findById(userId, function(user) {
+    if ( user ) {
+      Account.findById(contactId, function(contact) {
+        Account.addContact(user, contact);
+        Account.addContact(contact, userId);
+        user.save();
+      });
+    }
+  });
+
+  res.send({status: 200});
+});
+
+router.delete('/accounts/:id/contact', function (req, res) {
+  var userId = req.params.id == 'me'
+                     ? req.session.userId
+                     : req.params.id;
+  var contactId = req.param('contactId', null);
+  if ( null == contactId ) {
+    res.send(400);
+    return;
+  }
+
+  Account.findById(userId, function(user) {
+    if ( !user ) return;
+    Account.findById(contactId, function(contact, err) {
+      if ( !contact ) return;
+      Account.removeContact(user, contactId);
+      Account.removeContact(contact, userId);
+    });
+  });
+  res.send({status: 200});
+});
+
 // expose router
 // -------------
 module.exports = router;

@@ -16,7 +16,7 @@ define(['text!tpl/profile.html', 'models/Status', 'views/status'],
         _.each(statusCollection, function (statusJson) {
           var statusModel = new Status(statusJson);
           var statusHtml = (new StatusView({model: statusModel})).render().el;
-          statusHtml.prependTo('.status_list').hide().fadeIn('slow');
+          $(statusHtml).prependTo('.status_list').hide().fadeIn('slow');
         });
       }
     }

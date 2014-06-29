@@ -18,6 +18,16 @@ var Status = new mongoose.Schema({
   status: {type: String}
 });
 
+var Contact = new mongoose.Schema({
+  name: {
+    first:   { type: String },
+    last:    { type: String }
+  },
+  userId: { type: mongoose.Schema.ObjectId },
+  added:     { type: Date },     // When the contact was added
+  updated:   { type: Date }      // When the contact last updated
+});
+
 // define Account's schema
 var AccountSchema = new mongoose.Schema({
 
@@ -39,6 +49,8 @@ var AccountSchema = new mongoose.Schema({
   photoUrl: { type: String },
 
   biography: { type: String },
+
+  contacts:  [Contact],
 
   status:    [Status], // My own status updates only
   
@@ -128,4 +140,43 @@ Account.prototype.findById = function (userId, callback) {
   User.findOne({_id: userId}, function(err, user) {
     callback(user);
   });
+};
+
+//
+Account.prototype.findByString = function (searchStr, callback) {
+  var searchReg = new RegExp(searchStr, 'i');
+  User.find({
+    $or: [
+      { 'name.full': { $regex: searchReg } },
+      { email: { $regex: searchReg } }
+    ]
+  }, callback);
+}
+
+//
+Account.prototype.addContact = function (user, addcontact) {
+  var contact = {
+    name: addcontact.name,
+    accountId: addcontact._id,
+    added: new Date(),
+    updated: new Date()
+  };
+  user.contacts.push(contact);
+
+  user.save(function (err) {
+    if (err) {
+      console.log('Error saving account: ' + err);
+    }
+  });
+};
+
+Account.prototype.removeContact = function (user, contactId) {
+  if ( null == user.contacts ) return;
+
+  user.contacts.forEach(function(contact) {
+    if ( contact.accountId === contactId ) {
+      user.contacts.remove(contact);
+    }
+  });
+  user.save();
 };
